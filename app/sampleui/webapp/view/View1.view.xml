@@ -1,0 +1,77 @@
+<mvc:View controllerName="com.sample.sampleui.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+     xmlns:l="sap.ui.layout"
+	xmlns:u="sap.ui.unified"
+    xmlns="sap.m">
+    <Page id="page" title="{i18n>title}">
+        <content>
+             <l:VerticalLayout>
+                <u:FileUploader
+                    id="fileUploader"
+                    name="myFileUpload"
+                    uploadUrl="/odata/v4/media-server/Media(2)/content"
+                    httpRequestMethod="Put"
+                    sendXHR="true" 
+					useMultipart="false"
+                    uploadStart="beforeUploadStart"
+                    tooltip="Upload your file to the local server"
+                    uploadComplete="handleUploadComplete"/>
+                <Button
+                    text="Upload File"
+                    press="handleUploadPress"/>
+	        </l:VerticalLayout>
+
+              <Table id="idProductsTable"
+		inset="false"
+		items="{
+			path: '/Media',
+			sorter: {
+				path: 'id'
+			}
+		}">
+		<headerToolbar>
+			<OverflowToolbar>
+			
+			</OverflowToolbar>
+		</headerToolbar>
+		<infoToolbar>
+			<OverflowToolbar>
+				<Label text="File list"/>
+			</OverflowToolbar>
+		</infoToolbar>
+		<columns>
+            <Column
+				width="12em">
+				<Text text="ID" />
+			</Column>
+			<Column
+				width="12em">
+				<Text text="File Name" />
+			</Column>
+			<Column
+				minScreenWidth="Tablet"
+				demandPopin="true">
+				<Text text="App Name" />
+			</Column>
+			<Column
+				minScreenWidth="Desktop"
+				demandPopin="true"
+				hAlign="End">
+				<Text text="Download" />
+			</Column>
+		</columns>
+		<items>
+			<ColumnListItem vAlign="Middle">
+				<cells>
+                    <Text text="{id}" />
+					<Text text="{fileName}" />
+					<Text text="{applicationName}" />
+                    <Link text="Download" target="_blank"  press="handleLinkPress" />
+				</cells>
+			</ColumnListItem>
+		</items>
+	</Table>
+    
+        </content>
+    </Page>
+</mvc:View>

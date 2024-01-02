@@ -1,0 +1,97 @@
+_schema-version: "3.1"
+ID: SampleApp
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: SampleApp-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: SampleApp-db
+  - name: SampleApp-auth
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm
+- name: SampleApp-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: SampleApp-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: SampleApp-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: SampleApp-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - comsamplesampleui.zip
+      name: comsamplesampleui
+      target-path: resources/
+- name: comsamplesampleui
+  type: html5
+  path: app/sampleui
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: SampleApp-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: SampleApp-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      tenant-mode: dedicated
+      xsappname: SampleApp-${org}-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+- name: SampleApp-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: SampleApp-html5-srv
+    service-plan: app-host
+- name: SampleApp-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: SampleApp-destination-service
+    service-plan: lite
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npx cds build --production

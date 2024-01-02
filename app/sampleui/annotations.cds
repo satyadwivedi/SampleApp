@@ -1,0 +1,1 @@
+using com.sampleapp.MediaServer as service from '../../srv/sample-service';

@@ -1,0 +1,9 @@
+{
+
+  "scopes": [{
+    "name": "uaa.user",
+    "description": "UAA"
+  }],
+  "attributes": [],
+  "role-templates": []
+}
